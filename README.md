@@ -7,7 +7,7 @@ The central tenet of this project is that while there might be no such thing as 
 
 In this project, I will attempt to utilize word embeddings to elicit such differences. The embedding of text in a vector space captures relations between words as they are used in a corpus. If we distinguish between direct association (e.g. the words 'blue' and 'sky' being used in succession) and structural equivalence (e.g. the word 'cat' and 'dog' being relatively interchangeable), word embeddings in particular seem to capture the latter.
 
-By comparing embeddings from different corpora, embeddings might help us elicit which words that have the largest (and smallest) discrepancies in terms of their structural equivalences between corpora. 
+By comparing embeddings from different corpora, embeddings might help us elicit which words that have the largest (and smallest) discrepancies in terms of their structural equivalences between corpora.  
 
 
 ## Data
@@ -58,11 +58,11 @@ Rotated distances is greater for words that are less frequent in the corpus. Thi
 ![Figure 1](./Figures/Pseudo_aligned_distances_by_count.png?raw=true "Title")
 
 #### Inspecting individual words
-The 50 words with the largest difference are:
+The 50 words with the largest rotated difference are:
 
 > ['ding_PROPN', 'boop_PROPN', 'vis_X', 'totesmessenger_PROPN', 'bloop_ADJ', 'faq_NOUN', 'drs_NOUN', '0aremindme_NUM', '0a_PROPN', 'helperbot_PROPN', 'bleep_ADJ', 'remindmebot_NOUN', 'yada_PROPN', 'yadda_PROPN', 'footer_NOUN', 'sort_ADJ', 'album_NOUN', 'gifs_NOUN', 'utc_NOUN', 'webpage_NOUN', 'spade_NOUN', 'borrower_NOUN', 'download_VERB', 'llc_PROPN', 'sneakpeekbot_PROPN', 'autotldr_NOUN', 'resubmit_VERB', 'blah_INTJ', '31b9fm_NUM', 'clickablelinkbot_NOUN', '0anote_X', 'darkness_NOUN', 'queer_NOUN', 'realdonaldtrump_NOUN', 'sachs_PROPN', '31bfht_ADJ', 'chrome_PROPN', 'arlington_PROPN', 'thurmond_PROPN', 'jul_PROPN', 'lago_PROPN', 'jacobs_PROPN', 'ba_PROPN', 'bain_PROPN', 'intensity_NOUN', 'oecd_PROPN', 'fy_PROPN', '3a_PROPN', 'cloture_NOUN', 'v1_NOUN']
 
-The 50 words with the smallest difference are:
+The 50 words with the smallest rotated difference are:
 
 > ['mean_VERB', 'actually_ADV', 'course_ADV', 'simply_ADV', 'want_VERB', 'gt_INTJ', 'guess_VERB', 'sure_ADJ', 'go_VERB', 'certainly_ADV', 'know_VERB', 'probably_ADV', 'obviously_ADV', 'think_VERB', 'happen_VERB', 'maybe_ADV', 'like_INTJ', 'right_ADV', 'especially_ADV', 'guy_NOUN', 'basically_ADV', 'yeah_INTJ', 'expect_VERB', 'sure_INTJ', 'start_VERB', 'realize_VERB', 'argue_VERB', 'gt_CCONJ', 'say_VERB', 'exactly_ADV', 'try_VERB', 'yes_INTJ', 'thing_NOUN', 'consider_VERB', 'talk_VERB', 'need_VERB', 'definitely_ADV', 'likely_ADV', 'imagine_VERB', 'see_VERB', 'suppose_VERB', 'apparently_ADV', 'time_NOUN', 'reason_NOUN', 'lol_PROPN', 'place_NOUN', 'literally_ADV', 'long_ADV', 'fact_NOUN', 'people_NOUN']
 
