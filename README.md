@@ -41,13 +41,13 @@ Word embeddings allow for multiple ways of comparing corpora. At a broad level, 
 TO DO
 * Implement proper rotations (i.e. distance preserving / orthogonal)
 
-To get a sense of this approach, I have initially applied to approaches to identify an optimal improper (non-distance preserving) rotation:
+To get a sense of this approach, I have initially applied two approaches to identify an optimal improper (non-distance preserving) rotation:
 * Stochastic Gradient Descent (sgd): Adjust the rotation matrix according to the gradient of the mean squared euclidean distance between sampled words.
 * Pseudo-inverse (pseudo): Applying the pseudo-inverse to solve the equivalent of an exact rotation
 
 #### Distribution of squared euclidean distances
 The two approaches generate very similar distributions of rotated distances.
-![Figure 1](./Figures/Pseudo_aligned_distances_by_count.png?raw=true "Title")
+![Figure 3](./Figures/Aligned_distances.png)
 
 #### Squared euclidean distance by POS-type
 There is great within-POS variation in rotated distance - nouns and proper nouns are highest on average.
@@ -55,5 +55,6 @@ There is great within-POS variation in rotated distance - nouns and proper nouns
 
 #### Squared euclidean distance by POS-type
 Rotated distances is greater for words that are less frequent in the corpus. This seem to be an undesirable feature. 
-![Figure 3](./Figures/Aligned_distances.png?raw=true "Title")
+![Figure 1](./Figures/Pseudo_aligned_distances_by_count.png?raw=true "Title")
+
 
