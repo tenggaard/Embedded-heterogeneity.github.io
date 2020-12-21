@@ -39,11 +39,12 @@ Word embeddings allow for multiple ways of comparing corpora. At a broad level, 
 
 ### Results from direct comparison
 TO DO
-* Implement proper rotations (i.e. distance preserving / orthogonal)
+* Consider using the same distance measure when training the embedding and aligning the rotation 
 
-To get a sense of this approach, I have initially applied two approaches to identify an optimal improper (non-distance preserving) rotation:
-* Stochastic Gradient Descent (sgd): Adjust the rotation matrix according to the gradient of the mean squared euclidean distance between sampled words.
-* Pseudo-inverse (pseudo): Applying the pseudo-inverse to solve the equivalent of an exact rotation
+I have applied three approaches to identify an optimal distance-preserving rotation, that yield similar results (last is the exact solution):
+* Stochastic Gradient Descent (sgd): Adjust the rotation matrix according to the gradient of the mean squared euclidean distance between sampled words and find the nearest orthogonal matrix based on the SVD. 
+* Pseudo-inverse (pseudo): Apply the pseudo-inverse from a sample of words to solve the equivalent of an exact rotation, take the mean of the suggested rotations matrices, and find the nearest orthogonal matrix.  
+* Orthogonal Procustes Problem (svd): The problem is known as the orthogonal procrustes problem, which has the analytical solution U x V.T, where U and VT are from the SVD of the product of the two embeddings.
 
 #### Distribution of squared euclidean distances
 The two approaches generate very similar distributions of rotated distances.
@@ -60,10 +61,10 @@ Rotated distances is greater for words that are less frequent in the corpus. Thi
 #### Inspecting individual words
 The 50 words with the largest rotated difference are:
 
-> ['ding_PROPN', 'boop_PROPN', 'vis_X', 'totesmessenger_PROPN', 'bloop_ADJ', 'faq_NOUN', 'drs_NOUN', '0aremindme_NUM', '0a_PROPN', 'helperbot_PROPN', 'bleep_ADJ', 'remindmebot_NOUN', 'yada_PROPN', 'yadda_PROPN', 'footer_NOUN', 'sort_ADJ', 'album_NOUN', 'gifs_NOUN', 'utc_NOUN', 'webpage_NOUN', 'spade_NOUN', 'borrower_NOUN', 'download_VERB', 'llc_PROPN', 'sneakpeekbot_PROPN', 'autotldr_NOUN', 'resubmit_VERB', 'blah_INTJ', '31b9fm_NUM', 'clickablelinkbot_NOUN', '0anote_X', 'darkness_NOUN', 'queer_NOUN', 'realdonaldtrump_NOUN', 'sachs_PROPN', '31bfht_ADJ', 'chrome_PROPN', 'arlington_PROPN', 'thurmond_PROPN', 'jul_PROPN', 'lago_PROPN', 'jacobs_PROPN', 'ba_PROPN', 'bain_PROPN', 'intensity_NOUN', 'oecd_PROPN', 'fy_PROPN', '3a_PROPN', 'cloture_NOUN', 'v1_NOUN']
+> ['yada_PROPN', 'vis_X', 'yadda_PROPN', 'spade_NOUN', 'dee_PROPN', 'ding_PROPN', 'usable_ADJ', 'drip_NOUN', 'pirate_NOUN', 'resubmit_VERB', 'footer_NOUN', 'blah_INTJ', 'jacobs_PROPN', 'latina_PROPN', 'gaza_PROPN', 'greet_VERB', 'boop_PROPN', 'plug_NOUN', 'rah_PROPN', 'strip_NOUN', 'mushroom_NOUN', 'duplicate_ADJ', 'cunningham_PROPN', 'patch_NOUN', 'shepard_PROPN', 'beta_NOUN', 'precision_NOUN', 'nsfw_PROPN', 'gag_NOUN', 'tat_NOUN', 'robin_PROPN', 'rig_NOUN', 'lighting_NOUN', 'buckley_PROPN', 'quadruple_VERB', 'sewer_NOUN', 'rescind_VERB', 'choir_NOUN', 'railroad_NOUN', 'gimme_PROPN', 'sort_ADJ', 'fill_NOUN', 'gifs_NOUN', 'imagery_NOUN', 'bp_PROPN', 'convo_NOUN', 'turner_PROPN', 'sterling_PROPN', 'increased_ADJ', 'gracious_ADJ']
 
 The 50 words with the smallest rotated difference are:
 
-> ['mean_VERB', 'actually_ADV', 'course_ADV', 'simply_ADV', 'want_VERB', 'gt_INTJ', 'guess_VERB', 'sure_ADJ', 'go_VERB', 'certainly_ADV', 'know_VERB', 'probably_ADV', 'obviously_ADV', 'think_VERB', 'happen_VERB', 'maybe_ADV', 'like_INTJ', 'right_ADV', 'especially_ADV', 'guy_NOUN', 'basically_ADV', 'yeah_INTJ', 'expect_VERB', 'sure_INTJ', 'start_VERB', 'realize_VERB', 'argue_VERB', 'gt_CCONJ', 'say_VERB', 'exactly_ADV', 'try_VERB', 'yes_INTJ', 'thing_NOUN', 'consider_VERB', 'talk_VERB', 'need_VERB', 'definitely_ADV', 'likely_ADV', 'imagine_VERB', 'see_VERB', 'suppose_VERB', 'apparently_ADV', 'time_NOUN', 'reason_NOUN', 'lol_PROPN', 'place_NOUN', 'literally_ADV', 'long_ADV', 'fact_NOUN', 'people_NOUN']
+> ['actually_ADV', 'probably_ADV', 'know_VERB', 'think_VERB', 'guy_NOUN', 'maybe_ADV', 'gt_INTJ', 'mean_VERB', 'thing_NOUN', 'happen_VERB', 'sure_ADJ', 'go_VERB', 'gt_CCONJ', 'say_VERB', 'simply_ADV', 'lol_PROPN', 'instead_ADV', 'believe_VERB', 'yeah_INTJ', 'people_NOUN', 'obviously_ADV', 'lot_NOUN', 'guess_VERB', 'time_NOUN', 'start_VERB', 'especially_ADV', 'right_ADV', 'problem_NOUN', 'consider_VERB', 'talk_VERB', 'idea_NOUN', 'like_SCONJ', 'exactly_ADV', 'try_VERB', 'tell_VERB', 'continue_VERB', 'well_ADJ', 'reason_NOUN', 'support_VERB', 'get_VERB', 'win_VERB', 'bad_ADJ', 'certainly_ADV', 'work_VERB', 'good_ADJ', 'help_VERB', 'literally_ADV', 'fact_NOUN', 'call_VERB', 'come_VERB']
 
 
