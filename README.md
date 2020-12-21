@@ -53,7 +53,7 @@ The two approaches generate very similar distributions of rotated distances.
 There is great within-POS variation in rotated distance - nouns and proper nouns are highest on average.
 ![Figure 2](./Figures/Pseudo_aligned_distances_by_POS.png?raw=true "Title")
 
-#### Squared euclidean distance by POS-type
+#### Squared euclidean distance by corpus frequency
 Rotated distances is greater for words that are less frequent in the corpus. This seem to be an undesirable feature. 
 ![Figure 1](./Figures/Pseudo_aligned_distances_by_count.png?raw=true "Title")
 
