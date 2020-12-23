@@ -48,7 +48,7 @@ I have applied three approaches to identify an optimal distance-preserving rotat
 
 #### Distribution of squared euclidean distances
 The two approaches generate very similar distributions of rotated distances.
-![Figure 3](./Figures/Aligned_distances.png)
+![Figure 1](./Figures/Aligned_distances.png)
 
 #### Squared euclidean distance by POS-type
 There is great within-POS variation in rotated distance - nouns and proper nouns are highest on average.
@@ -56,7 +56,15 @@ There is great within-POS variation in rotated distance - nouns and proper nouns
 
 #### Squared euclidean distance by corpus frequency
 Rotated distances is greater for words that are less frequent in the corpus. This seem to be an undesirable feature. 
-![Figure 1](./Figures/Pseudo_aligned_distances_by_count.png?raw=true "Title")
+![Figure 3](./Figures/Pseudo_aligned_distances_by_count.png?raw=true "Title")
+
+#### Squared euclidean distance by distance to embedding center
+One explanation for the relation between word frequency and aligned distance, might be the following:
+* When aligning words, it might matter more for avg. aligned distance to match words closer to the embedding center than in the periphery.
+* Words that appear more frequently might be placed closer to the embedding center to minimize the avg. distance to context words   
+
+This seems to be the case
+![Figure 4](./Figures/Distance_to_center_by_count.png?raw=true "Title")
 
 #### Inspecting individual words
 The 50 words with the largest rotated difference are:
