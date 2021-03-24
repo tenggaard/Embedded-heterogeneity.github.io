@@ -2,7 +2,7 @@
 # Embedded Understanding
 Research project carried out by Thyge Enggaard under the supervision of Sune Lehmann and Morten Axel Pedersen. 
 
-[comment]: # https://ecotrust-canada.github.io/markdown-toc/
+<!-- https://ecotrust-canada.github.io/markdown-toc/ -->
 
 - [About this project](#about-this-project)
 - [Methodology](#methodology)
