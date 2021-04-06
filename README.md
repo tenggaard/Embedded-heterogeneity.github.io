@@ -185,7 +185,7 @@ It hence seem that frequency is also 'encoded' in direction.
 ### The rotation alignment correlates centrality and aligned distance
 Here, my hypothesis was that aligning the central words would result in lower avg. aligned distance, than aligning peripheral words, at least if the embedding distibution was non-uniform (as more words would then be located at the embedding center).
 
-To validate this, I simulated 2D-data. However, as the plot below shows, the simulation does not seem to support this explanation - there seem to be no correlation between centrality and aligned distance:
+To validate this, I simulated 2D-data. However, as the plot below shows, the simulation does not seem to support this explanation - there seem to be no correlation between centrality and aligned distance, even in the case of a non-uniformly distributed embedding:
 
 ![Figure](./Figures/simul_freq_centrality.png)
 
