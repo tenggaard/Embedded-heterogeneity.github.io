@@ -149,9 +149,9 @@ TO DO
 
 ## Embedding properties and alignment
     
-Based on initial attempts to align the embeddings, I observe that the alignment is (heavily) correlated with frequency. The plot below shows the relation between frequency and centrality based on the Word2Vec embeddings
-![Figure](./Figures/Distances_to_center_by_count.png)
+Based on initial attempts to align the embeddings, I observe that aligned distrance is (heavily) correlatd with frequency - words that appear more frequently have lower aligned distance.
 
+![Figure](./Figures/Aligned_distances_by_count.png)
 
 My initial hypothesis was that this was due to the following relations:
 
