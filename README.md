@@ -6,7 +6,7 @@ Research project carried out by Thyge Enggaard under the supervision of Sune Leh
 
 - [Studying contested meaning](#studying-contested-meaning)
 - [Methodological approaches](#methodological-approaches)
-- [Embedding methodology](#embedding-methodology)
+- [Embedding choices and validation](#embedding-choices-and-validation)
   * [Corpus preprocessing](#corpus-preprocessing)
   * [Embedding parameters](#embedding-parameters)
   * [Stochatic embeddings](#stochatic-embeddings)
@@ -41,19 +41,19 @@ Literature/concepts, that might be relevant:
 # Methodological approaches
 
 The idea I have pursued so far is a 'direct, global' comparison of two static embeddings:
-* Train an embedding on two corpora 
+* Train two static embedding, on each of two corpora 
 * Align the embeddings, by rotating one of the embeddings to best match the other (orthogonal transformation)
 * Identify words with highest and lowest aligned distance
 
 I have also considered the following alternatives:
 1. Indirect, static comparison of two embedding (i.e. measures that do not require alignment)
-    1. Indirect, global comparison: For each word, compare its distance to all other words between the two embeddings
-    1. Indirect, local comparison: For each word, compare its neighboorhodd, e.g. the overlap among the N nearest neighbors
+    1. Indirect, global comparison: For each word, calculate its distance to all other words in each embedding and compare distances (e.g. avg. difference)
+    1. Indirect, local comparison: For each word, compare the local neighborhoods, e.g. the overlap among the N nearest neighbors in each of the embeddings
 1. Dynamic embedding of single corpus: 
     1. Obtain a representation of each token of each word type in the combined corpus, from a pretrained, dynamic embedding (e.g. from BERT, perhaps with finetuning)
-    1. Cluster the word representations for each type (to capture disjoint context such as apple (fruit) and apple (company). That is, each word is now split up into multiple senses.
+    1. Cluster the word representations for each type (to capture disjoint context such as apple (fruit) and apple (company). That is, each word is now split up into multiple, 'disjoint' senses.
     1. For each cluster (word sense), calculate a measure of dispersion - highly dispersed clusters would be candidate words
-    1. One advantage, is that this would also allow for a more targeted local projection, only based on other words associated to the particular sense of the word type
+    1. One advantage, is that after this, one could make a targeted local projection based on the word sense and not just the word type.
     1. One disadvantage is that the dispersion might not relate to between-corpora differences, but could be due to within-corpus effects. This would still be interesting, particular if I can somehow couple this to authors/subreddits.  
 1. Dynamic embedding of two corpora:    
     1. Similar to first three steps for the dynamic embedding of single corpus - clusters obtained across corpora, to ensure they are shared
@@ -63,15 +63,17 @@ I have also considered the following alternatives:
 Unfortunately (in terms of being new) / encouraging (in terms of being feasible and promising), something along the lines of the dynamic options above has was published last year: [Analysing Lexical Semantic Change with Contextualised Word Representations](https://www.aclweb.org/anthology/2020.acl-main.365/) 
 
 
-# Embedding methodology
+# Embedding choices and validation
 
-The embedding of a corpus is an attempt to represent (semantic) similarities between words based on the distribution (co-occurence) of words in the corpus. Here, I will briefly elaborate on three challenges when working with word embeddings, and how handling these challenges might look, when the focus is to represent a particular corpus as well as possible (as opposed to say generalize the embedding to be usable in different settings):
+The embedding of a corpus is an attempt to represent (semantic) similarities between words based on the distribution (co-occurence) of words in the corpus. Here, I will briefly elaborate on three aspects of embeddings, and how validation might look, when the focus is to represent a particular corpus as well as possible (as opposed to say generalize the embedding to be usable in different settings):
 1. Corpus preprocessing prior to embedding
-1. Training an embedding requires making multiple choices 'in advance'
-1. Using an embedding in a valid way requires taking its (potential) stochastic nature into account   
+1. Deciding embedding parameters
+1. Assessing the effect of the (potentially) stochastic nature of embeddings   
 
 ## Corpus preprocessing
-Embedding the 'raw' corpus can pose various technical challenges (e.g. rare words, large vocabulary). Many pre-processing steps can be applied, e.g. removing words deemed 'unimportant' (often so called stop words), lemmatizing/stemming words, removing words with few characters and/or removing numbers. In addition, given the analysis, certain distinctions might be relevant to make explicit, such as the part-of-speech or grammatical tense or voice.    
+Embedding the 'raw' corpus can pose various technical challenges (e.g. rare words, large vocabulary). Many pre-processing steps can be applied, e.g. removing words deemed 'unimportant' (often so called stop words), lemmatizing/stemming words, removing words with few characters and/or removing numbers.
+
+While some choices might be analytically motivated (such as splitting words based on their part-of-speech or grammatical tense or voice), this will often not resolve all these choices.      
 
 
 ## Embedding parameters
@@ -81,14 +83,16 @@ Training word embeddings require making choices in two areas:
     1. Architecture parameters: The model for transforming words to vectors often involve several parameters. A common one is the window-size - how close (in number of tokens) must to word-types be in order to count as associated.
     1. Learning paramters: In addition, the learning procedure entails hyper parameters, such the number of epochs (the number of times the corpus is ingested) or the learning rate (how 'aggressively' the model updates its internal parameters).
 
-Ideally, choices should be made based on an understanding of how each decision affects properties of the embedding.  To the best of my (limited) knowledge, there is however still significant uncertainty about many of these relations. 
+Ideally, choices regarding preprocessing (that is not analytically motivated) and embedding paramters should be made based on an understanding of how each decision affects the properties of the embedding for the particular corpus and research question. To the best of my (limited) knowledge, there is however still significant uncertainty about many of these relations, as well as how they vary with the corpus. 
 
 Hence, these choices are often made:
-* based on how well they have worked in other applications, raising questions of generalizability
-* by applying different options and comparing the results, raising questions of computational feasibility
+* Based on how well they have worked in other applications. This raises the question of how appropriate they are for a given corpus. As many of these observations are made by the Natural Languace Processing (NLP) community, which in turn (to my current understanding) often work on fairly large corpora, one might in particular worry whether the size of the corpora changes these results.      
+* By applying different options on the given corpus and comparing the results. This raises questions of computational feasibility, as the number of joint paramter configurations is often beyond what can be applied in reasonable time.  
 
 ## Stochatic embeddings
-In addition to these explicit choices (often made implicit through default settings), word embeddings are stochastic - several of the steps involved rely on randomization (e.g. the initial allocation of word vectors, sampling of word pairs in a batch - this is not the case for PPMI embeddings). This leads to instability - applying the same set of choices multiple times will likely not lead to identical embeddings. 
+In addition to these explicit choices (often made implicit through default settings), word embeddings are stochastic - several of the steps involved rely on randomization (e.g. the initial allocation of word vectors, sampling of word pairs in a batch - this is not the case for PPMI embeddings). This leads to instability - applying the same set of choices multiple times will likely not lead to identical embeddings.
+
+The most obvious approach to assessing how this stochasticity affects the 'results' is to make multiple embeddings (with corpus preprocessing and embedding parameters fixed). Beyond computational limits, this then raises questions of how to compare embeddings (obtain results for each, or integrate multiple embeddings into one?) as well as how to proceed, if one is interested in multiple results.   
 
 
 # Empirical analysis so far
