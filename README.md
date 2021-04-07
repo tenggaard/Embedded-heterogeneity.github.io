@@ -127,10 +127,10 @@ TO DO
   
 ## Embeddings
 I have obtained the following embeddings:
-* SVD-PPMI
-* Skip-gram with negative sampling (SGNS-version of word2vec), based on the Gensim-library
+* SVD: Singular-value decomposition of the positive pointwise mutual information matrix
+* W2V: Skip-gram with negative sampling (SGNS-version of word2vec), based on the Gensim-library
     * Selected parameters: size=300, window=5, min_count=20, negative(samples)=20 
-* FastText
+* FT: FastText embedding, similar to W2V but embeds character n-grams to obtain full word embedding.
     * Selected parameters: Same as above, min_n(character n-gram length)=3, max_n=6
     
 TO DO:
@@ -139,54 +139,50 @@ TO DO:
     * For stochasticity: Run multiple embeddings, align and take average?
 
 ## Alignment
-Obtaining the optimal, distance-preserving rotation (i.e. the rotation that yields the lowest avg. rotated distance) is known as the Orthogonal Procustes Problem:
+To align the embeddings, I identify a matrix, R, that satisfies the following two criteria:
+1. R should preserve the structure of the embedding, in the sense that the length of vectors and angle between them should be unaffected. Mathematically, this imply that R should be an orthogonal matrix
+1. Transforming the embedding of r/Democrats by R should minimize the Forbenius/L2 distance between the embedding of r/Republicans and the transformed r/Democrats embedding. 
+
+Finding the matrix R* that meets these criteria is known as the Orthogonal Procrustes problem, and has the following solution:
 * Let E_r and E_d denote the unrotated republican and democratic embeddings respectively
 * Let U, V.T be the matrixes obtained from the svd of the product of the embeddings, i.e. E_d.T x E_r = U x S x V.T
-* The rotation matrix R, that minimizes the distance between E_r and E_d x R, has the analytical solution R = U x V.T 
+* R* has the analytical solution R* = U x V.T 
 
 TO DO
 * Consider using the same distance measure when training the embedding and aligning the rotation 
 
 ## Embedding properties and alignment
+
+### Original embeddings
     
-Based on initial attempts to align the embeddings, I observe that aligned distance is (heavily) correlated with frequency - words that appear more frequently have lower aligned distance.
+The plot below shows the relation between aligned distance, word vector length and word frequency for the different embeddings:
+![Figure](./Figures/freq_length_dist.png)
 
-![Figure](./Figures/Aligned_distances_by_count.png)
+In general, aligned distance correlates highly with vector length (Pearson correlation between 0.76 and 0.94) and to some extent with  frequency (absolute Pearson correlation between 0.36 and 0.45 - correlation is positive for SVD and negative for W2V and FT, I don't know why this difference occur).
 
-My initial hypothesis was that this was due to the following relations:
-1. The static embedding correlates frequeny and centrality
-1. The rotation alignment correlates centrality and aligned distance
+Given these correlations, the words with highest aligned distance are infrequent words, which seems unlikely to be usefull in identifying words with contested meaning.
 
-### The static embeddings correlates frequency and centrality (vector length)
-1. There 'wider' the use of a word is (i.e. the broader its set of context word is), the more the word is used (i.e. higher frequency).
-1. Also, the 'wider' the use of a word is, the more central the word is in the embedding (i.e. the shorter the length of demeaned vectors), as its position becomes a (weighted) average of its position in the different contexts.
-1. Together, this imply that word frenquency and distance to embedding center (centrality) is negatively correlated, which the plot below confirms for W2V and FT:
+### Normalized embeddings
 
-![Figure](./Figures/freq_centrality.png)
+To avoid this, and in line with standard use in many NLP-settings, I normalize the embeddings, such that all words vectors have unit length. The Frobenius/L2 distance between the embeddings is now equal to 2 x (1 - the inner product), which is also equal to two times the cosine distance. Hence this distance measure effectively compares direction of vectors, with two words being farther apart, the more different their aligned directions are.
 
-Pearson correlation (republican, democrats): SVD (0.43, 0.42), W2V (-0.45, -0.43), FT (-0.32, -0.28)
+The plot below shows the relation between aligned distance and word frequency for normalized embeddings.
+![Figure](./Figures/normalized_freq_dist.png)
 
-Surprisingly, the correlation is opposite for the SVD-embedding - I don't know why.
+For W2V and FT, the correlation is still aparent (Pearson correlation between -0.41 and -0.49, a little higher than for the original embedding), while for the SVD-PPMI embedding, the correlation seem only to be present for low-frequency words (Pearson correlation -0.07, significantly lower than -0.36 in the original embedding).
 
-This correlation is often an argument for normalizing embedding vectors, such that all words lie on the unit circle, and the inner product of two vectors reduces to the cosine of the angle between them, effectively comparing the direction of the vectors.
+Hence, it sees the undesirable relation between frequency and aligned distance is not removed by normalizing vectors.
 
-If vector directions where evenly distributed over the 'direction space', the mean of the normalized vectors should be at the origin, and distances to the embedding center should be tightly distributed around 1.
-
-Yet, this is not the case, and further, it seems that embedding centrality still correlates with frequency:
-
-![Figure](./Figures/freq_normalized_centrality.png)
-
-Pearson correlation (republican, democrats): SVD (0.30, 0.27), W2V (-0.54, -0.53), FT (-0.33, -0.31)
-
-It hence seem that frequency is also 'encoded' in direction.
-* It might be possible to 'remove' this direction prior to aligning embeddings, e.g. by identifying a frequency direction (the hyperplane that maximizes the variance of projects words frequency, similar to PCA), identifying the normal plane to this direction and projection the embedding onto this normal plane ('loosing' one dimension of the embedding) 
-* Perhaps the degree of 'direction uniformity' is a relevant criteria to consider, when determining when to stop the embedding procedure? Perhaps it makes sense to explicitly include it in the loss function? 
-
-### The rotation alignment correlates centrality and aligned distance
-Here, my hypothesis was that aligning the central words would result in lower avg. aligned distance, than aligning peripheral words, at least if the embedding distibution was non-uniform (as more words would then be located at the embedding center).
-
-To validate this, I simulated 2D-data. However, as the plot below shows, the simulation does not seem to support this explanation - there seem to be no correlation between centrality and aligned distance, even in the case of a non-uniformly distributed embedding:
+Potential mechanisms, that might play a role:
+1. Frequency and centrality is correlated (centrality is equivalent to vector length) - confirmed
+    1. There 'wider' the use of a word is (i.e. the broader its set of context word is), the more the word is used (i.e. higher frequency).
+    1. Also, the 'wider' the use of a word is, the more central the word is in the embedding (i.e. the shorter the length of demeaned vectors), as its position becomes a (weighted) average of its position in the different contexts.
+1. The normalized embedding is still not uniformly distributed in direction - confirmed     
+    1. If vector directions where evenly distributed over the 'direction space', the mean of the normalized vectors should be at the origin, and distances to the embedding center should be tightly distributed around 1.
+    1. This is not the case, and further, it seems that embedding centrality still correlates with frequency. It hence seem that frequency is also 'encoded' in direction.
+    1. It might be possible to 'remove' this direction prior to aligning embeddings, e.g. by identifying a frequency direction (the hyperplane that maximizes the variance of projects words frequency, similar to PCA), identifying the normal plane to this direction and projection the embedding onto this normal plane ('loosing' one dimension of the embedding) 
+    1. Perhaps the degree of 'direction uniformity' is a relevant criteria to consider, when determining when to stop the embedding procedure? Perhaps it makes sense to explicitly include it in the loss function?
+1. The rotation alignment correlates centrality and aligned distance for non-uniform distributions - disproved
+    1. Based on simulated 2D-data (see plot below), this does not seem to be the case, even in the case of a non-uniformly distributed embedding:
 
 ![Figure](./Figures/simul_freq_centrality.png)
-
- 
