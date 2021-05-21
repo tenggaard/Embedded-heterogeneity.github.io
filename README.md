@@ -189,7 +189,7 @@ Potential mechanisms, that might play a role:
 
 ## Stratified distance
 
-Given the difficulties in removing the correlation between frequency and aligned distance, below show aligned distance stratified by frequency - columns show the upper count range and total number of words in count range.
+Given the difficulties in removing the correlation between frequency and aligned distance, I instead control for it based on a simple linear regression. Given the linear relation between aligned distance and log of count as evident above, I regress aligned distance on the logarithm of the average count across the two subreddits, and partition the words into based on the percentiles of the prediced distance. The tables below show the highest and lowest aligned distances for each of the these groups (columns indicate the corresponding percentile and number of words in each cluster).
 
 Highest aligned distance
 ![Figure](./Figures/high_stratified_distance.png)
